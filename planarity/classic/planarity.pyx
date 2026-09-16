@@ -491,7 +491,11 @@ cdef class PGraph:
 
         Args:
             labels (bool): If ``True``, vertex labels are rendered in the drawing.
-                Otherwise, vertices are rendered unlabelled in the drawing.
+                Otherwise, vertices are rendered unlabelled in the drawing. If a
+                label's rendered width would exceed its vertex's own bounding
+                rectangle, the label is truncated with a trailing ``...`` so it
+                stays within that rectangle (see Issue #91). The vertex's
+                geometry itself is never resized to accommodate a label.
             outfileName (:obj:`str`): File to which to output a Matplotlib
                 rendering of the planar graph. If not given, then the caller can
                 call :external+matplotlib:py:func:`matplotlib.pyplot.savefig`.
@@ -549,6 +553,7 @@ cdef class PGraph:
             )
         patches = []
         node_labels = {}
+        vertex_bounds = {}
         xs = []
         ys = []
         # Use tuple unpacking for the list of tuples representing nodes
@@ -560,6 +565,7 @@ cdef class PGraph:
             xe = drawplanar_vertex_info['vertex_end']
             x = (xe+xb)/2
             node_labels[node] = (x, y)
+            vertex_bounds[node] = (xb, xe)
             patches += [FancyBboxPatch(
                 (xb, y - 0.25), xe - xb, 0.5,
                 boxstyle="round,pad=0.05",
@@ -578,20 +584,6 @@ cdef class PGraph:
             xs.append(x)
             plt.vlines([x], [yb], [ye])
 
-        # Apply labels to nodes if specified
-        if labels:
-            for n, (x, y) in node_labels.items():
-                plt.text(
-                    x, y, n,
-                    horizontalalignment='center',
-                    verticalalignment='center',
-                    bbox = dict(
-                        boxstyle='round',
-                        ec=(0.0, 0.0, 0.0),
-                        fc=(1.0, 1.0, 1.0),
-                    )
-                )
-
         p = PatchCollection(patches)
         ax = plt.gca()
         ax.add_collection(p)
@@ -601,6 +593,45 @@ cdef class PGraph:
         #flipping y axis direction
         plt.gca().invert_yaxis()
         plt.axis('off')
+
+        # Apply labels to nodes if specified
+        if labels:
+            fig = plt.gcf()
+            # Force a draw so the axes' data<->pixel transform is finalized
+            # before we measure any rendered text against it.
+            fig.canvas.draw()
+            renderer = fig.canvas.get_renderer()
+            inv = ax.transData.inverted()
+
+            for n, (x, y) in node_labels.items():
+                xb, xe = vertex_bounds[n]
+                box_width = xe - xb
+                full_label = str(n)
+
+                text_obj = plt.text(
+                    x, y, full_label,
+                    horizontalalignment='center',
+                    verticalalignment='center',
+                    bbox = dict(
+                        boxstyle='round',
+                        ec=(0.0, 0.0, 0.0),
+                        fc=(1.0, 1.0, 1.0),
+                    )
+                )
+
+                # Truncate with an ellipsis if the rendered label is wider
+                # than the vertex's own box (Issue #91).
+                bbox_data = text_obj.get_window_extent(
+                    renderer=renderer
+                ).transformed(inv)
+                core = full_label
+                target_width = box_width * 0.9
+                while core and bbox_data.width > target_width:
+                    core = core[:-1]
+                    text_obj.set_text(core + '...' if core else '...')
+                    bbox_data = text_obj.get_window_extent(
+                        renderer=renderer
+                    ).transformed(inv)
 
         if outfileName:
             plt.savefig(outfileName, dpi=fig.dpi)
