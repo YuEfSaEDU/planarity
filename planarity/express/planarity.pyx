@@ -23,9 +23,10 @@ cdef class PGraph:
         _embedding_workflow_status (int): Indicates the status of the embedding
             workflow; the value is not meaningful until after an embedding
             workflow method such as one of the following has been called:
-            * :py:meth:`~planarity.express.planarity.PGraph.is_planar`
-            * :py:meth:`~planarity.express.planarity.PGraph.embed_planar`
-            * :py:meth:`~planarity.express.planarity.PGraph.embed_drawplanar`
+
+            - :py:meth:`~planarity.express.planarity.PGraph.is_planar`
+            - :py:meth:`~planarity.express.planarity.PGraph.embed_planar`
+            - :py:meth:`~planarity.express.planarity.PGraph.embed_drawplanar`
 
             Note that these are called by several of the other member methods.
 
@@ -420,10 +421,11 @@ cdef class PGraph:
                             )
                         )
 
-                        # NOTE: The DrawPlanar context data gives geometric positioning;
-                        # a value of -1 indicates an error state, and therefore the
-                        # drawplanar_edge_info should not be included (i.e., the
-                        # final tuple member will be an empty dict)
+                        # NOTE: The DrawPlanar context data gives geometric
+                        # positioning; a value of -1 indicates an error state,
+                        # and therefore the drawplanar_edge_info should not be
+                        # included (i.e., the final tuple member will be an
+                        # empty dict)
                         if (
                             edge_position > -1 and
                             edge_start > -1 and
@@ -490,12 +492,13 @@ cdef class PGraph:
         Matplotlib and then saved to ``outfileName``, if given.
 
         Args:
-            labels (bool): If ``True``, vertex labels are rendered in the drawing.
-                Otherwise, vertices are rendered unlabelled in the drawing. If a
-                label's rendered width would exceed its vertex's own bounding
-                rectangle, the label is truncated with a trailing ``...`` so it
-                stays within that rectangle (see Issue #91). The vertex's
-                geometry itself is never resized to accommodate a label.
+            labels (bool): If ``True``, vertex labels are rendered in the
+                drawing. Otherwise, vertices are rendered unlabelled in the
+                drawing. If a label's rendered width would exceed its vertex's
+                own bounding rectangle, the label is truncated with a trailing
+                ``...`` so it stays within that rectangle (see Issue #91). The
+                vertex's geometry itself is never resized to accommodate a
+                label.
             outfileName (:obj:`str`): File to which to output a Matplotlib
                 rendering of the planar graph. If not given, then the caller can
                 call :external+matplotlib:py:func:`matplotlib.pyplot.savefig`.
@@ -674,4 +677,3 @@ cdef class PGraph:
             :py:class:`~planarity.express.planarity.PGraph` initialization.
         """
         return self.reverse_nodemap
-
