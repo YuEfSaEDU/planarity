@@ -31,4 +31,4 @@ doc/source/api/**
 
 # Cythonized extension .c files
 planarity/full/*.c
-planarity/classic/*.c
+planarity/express/*.c

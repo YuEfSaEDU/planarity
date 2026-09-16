@@ -18,22 +18,22 @@ def is_planar(graph):
     """Tests whether or not the graph is planar.
 
     Constructs a
-    :py:class:`~planarity.classic.planarity.PGraph`
-    and calls its :py:meth:`~planarity.classic.planarity.PGraph.is_planar`
+    :py:class:`~planarity.express.planarity.PGraph`
+    and calls its :py:meth:`~planarity.express.planarity.PGraph.is_planar`
     method.
 
     Args:
         graph: A graph specified in a format that may be converted to a
-            :py:class:`~planarity.classic.planarity.PGraph`.
+            :py:class:`~planarity.express.planarity.PGraph`.
 
     Returns:
         ``True`` if the graph is planar, or ``False`` if not.
 
     Raises:
         ValueError: if the given graph is already a
-            :py:class:`~planarity.classic.planarity.PGraph`.
+            :py:class:`~planarity.express.planarity.PGraph`.
         RuntimeError: if the graph couldn't be converted to a
-            :py:class:`~planarity.classic.planarity.PGraph`.
+            :py:class:`~planarity.express.planarity.PGraph`.
         RuntimeError: if an error was encountered by C-layer methods such
             as ``gp_Embed()``.
         RuntimeError: if a prior invocation of this method already failed.
@@ -47,13 +47,13 @@ def kuratowski_edges(graph):
     """Returns a list of the edges in a minimal non-planar subgraph of the graph.
 
     Constructs a
-    :py:class:`~planarity.classic.planarity.PGraph`
+    :py:class:`~planarity.express.planarity.PGraph`
     and calls its
-    :py:meth:`~planarity.classic.planarity.PGraph.kuratowski_edges` method.
+    :py:meth:`~planarity.express.planarity.PGraph.kuratowski_edges` method.
 
     Args:
         graph: A graph specified in a format that may be converted to a
-            :py:class:`~planarity.classic.planarity.PGraph`.
+            :py:class:`~planarity.express.planarity.PGraph`.
 
     Returns:
         A list of the edges in a minimal non-planar subgraph of the graph,
@@ -61,9 +61,9 @@ def kuratowski_edges(graph):
 
     Raises:
         ValueError: if the given graph is already a
-            :py:class:`~planarity.classic.planarity.PGraph`.
+            :py:class:`~planarity.express.planarity.PGraph`.
         RuntimeError: if the graph couldn't be converted to a
-            :py:class:`~planarity.classic.planarity.PGraph`.
+            :py:class:`~planarity.express.planarity.PGraph`.
         RuntimeError: if an error was encountered by C-layer methods such
             as ``gp_Embed()``.
         RuntimeError: if a prior invocation of this method already failed.
@@ -77,22 +77,22 @@ def ascii(graph) -> str:
     """Produces an ASCII string rendition of the graph, if it is planar.
 
     Constructs a
-    :py:class:`~planarity.classic.planarity.PGraph`
+    :py:class:`~planarity.express.planarity.PGraph`
     and calls its
-    :py:meth:`~planarity.classic.planarity.PGraph.ascii` method.
+    :py:meth:`~planarity.express.planarity.PGraph.ascii` method.
 
     Args:
         graph: A graph specified in a format that may be converted to a
-            :py:class:`~planarity.classic.planarity.PGraph`.
+            :py:class:`~planarity.express.planarity.PGraph`.
 
     Returns:
         An ASCII string rendition of a planar graph.
 
     Raises:
         ValueError: if the given graph is already a
-            :py:class:`~planarity.classic.planarity.PGraph`.
+            :py:class:`~planarity.express.planarity.PGraph`.
         RuntimeError: if the graph couldn't be converted to a
-            :py:class:`~planarity.classic.planarity.PGraph`.
+            :py:class:`~planarity.express.planarity.PGraph`.
         RuntimeError: if an error was encountered by C-layer methods
             such as ``gp_Embed()`` or ``gp_DrawPlanar_RenderToString()``.
         RuntimeError: if a prior invocation of this method already failed.
@@ -107,29 +107,29 @@ def draw(graph, labels=True, outfileName=None, **kwargs):
     """Draws the graph with Matplotlib, if it is planar.
 
     Constructs a
-    :py:class:`~planarity.classic.planarity.PGraph`
+    :py:class:`~planarity.express.planarity.PGraph`
     and calls its
-    :py:meth:`~planarity.classic.planarity.PGraph.draw` method with the
+    :py:meth:`~planarity.express.planarity.PGraph.draw` method with the
     given ``labels`` and ``outfileName``.
 
     Args:
         graph: A graph specified in a format that may be converted to a
-            :py:class:`~planarity.classic.planarity.PGraph`.
+            :py:class:`~planarity.express.planarity.PGraph`.
         labels (bool): If ``True``, vertex labels are rendered in the drawing.
             Otherwise, vertices are rendered unlabelled in the drawing.
         outfileName (:obj:`str`): File to which to output a Matplotlib
             rendering of the planar graph. If not given, then the caller can
             call :external+matplotlib:py:func:`matplotlib.pyplot.savefig`.
         **kwargs: Optional figure-level parameters forwarded to
-            :py:meth:`~planarity.classic.planarity.PGraph.draw`. Supported
+            :py:meth:`~planarity.express.planarity.PGraph.draw`. Supported
             keys are ``figsize`` and ``dpi``.
 
     Raises:
         ValueError: if the given graph is already a
-            :py:class:`~planarity.classic.planarity.PGraph`.
+            :py:class:`~planarity.express.planarity.PGraph`.
         ValueError: if an unsupported keyword argument is given.
         RuntimeError: if the graph couldn't be converted to a
-            :py:class:`~planarity.classic.planarity.PGraph`.
+            :py:class:`~planarity.express.planarity.PGraph`.
         ImportError: if dependencies from Matplotlib fail to be imported.
         RuntimeError: if an error was encountered by C-layer methods
             such as ``gp_Embed()``.
@@ -153,14 +153,14 @@ def write(graph, path: str = 'stdout', writeMode: int = WRITE_ADJLIST) -> None:
     """Writes the graph to ``path``.
 
     Constructs a
-    :py:class:`~planarity.classic.planarity.PGraph`
+    :py:class:`~planarity.express.planarity.PGraph`
     and calls its
-    :py:meth:`~planarity.classic.planarity.PGraph.write` method with the
+    :py:meth:`~planarity.express.planarity.PGraph.write` method with the
     specified ``path`` and ``writeMode``.
 
     Args:
         graph: A graph specified in a format that may be converted to a
-            :py:class:`~planarity.classic.planarity.PGraph`.
+            :py:class:`~planarity.express.planarity.PGraph`.
         path (str): Path to which to write graph. Defaults to ``stdout``
             stream.
         writeMode (int): Format to write the graph. Defaults to
@@ -168,9 +168,9 @@ def write(graph, path: str = 'stdout', writeMode: int = WRITE_ADJLIST) -> None:
 
     Raises:
         ValueError: if the given graph is already a
-            :py:class:`~planarity.classic.planarity.PGraph`.
+            :py:class:`~planarity.express.planarity.PGraph`.
         RuntimeError: if the graph couldn't be converted to a
-            :py:class:`~planarity.classic.planarity.PGraph`.
+            :py:class:`~planarity.express.planarity.PGraph`.
         RuntimeError: if the C-layer ``gp_Write()`` failed.
     """
     planarity.PGraph(graph).write(path, writeMode)
@@ -181,24 +181,24 @@ def mapping(graph) -> dict[int, typing.Any]:
     """Returns the map of integer vertex labels to their original labels.
 
     Constructs a
-    :py:class:`~planarity.classic.planarity.PGraph`
+    :py:class:`~planarity.express.planarity.PGraph`
     and calls its
-    :py:meth:`~planarity.classic.planarity.PGraph.mapping` method.
+    :py:meth:`~planarity.express.planarity.PGraph.mapping` method.
 
     Args:
         graph: A graph specified in a format that may be converted to a
-            :py:class:`~planarity.classic.planarity.PGraph`.
+            :py:class:`~planarity.express.planarity.PGraph`.
 
     Returns:
         A mapping between the integers assigned to the vertices, by
-        :py:class:`~planarity.classic.planarity.PGraph` initialization,
+        :py:class:`~planarity.express.planarity.PGraph` initialization,
         and their original labels provided to
-        :py:class:`~planarity.classic.planarity.PGraph` initialization.
+        :py:class:`~planarity.express.planarity.PGraph` initialization.
 
     Raises:
         ValueError: if the given graph is already a
-            :py:class:`~planarity.classic.planarity.PGraph`.
+            :py:class:`~planarity.express.planarity.PGraph`.
         RuntimeError: if the graph couldn't be converted to a
-            :py:class:`~planarity.classic.planarity.PGraph`.
+            :py:class:`~planarity.express.planarity.PGraph`.
     """
     return planarity.PGraph(graph).mapping()

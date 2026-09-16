@@ -12,26 +12,26 @@ def kuratowski_subgraph(graph):
     """Returns a :external+networkx:py:class:`networkx.Graph` containing a minimal non-planar subgraph of the graph.
 
     Constructs a
-    :py:class:`~planarity.classic.planarity.PGraph`
+    :py:class:`~planarity.express.planarity.PGraph`
     and calls its
-    :py:meth:`~planarity.classic.planarity.PGraph.kuratowski_edges` method, then
+    :py:meth:`~planarity.express.planarity.PGraph.kuratowski_edges` method, then
     converts the edge-list to a :external+networkx:py:class:`networkx.Graph`.
 
     Args:
         graph: A graph specified in a format that may be converted to a
-            :py:class:`~planarity.classic.planarity.PGraph`.
+            :py:class:`~planarity.express.planarity.PGraph`.
 
     Returns:
         A :external+networkx:py:class:`networkx.Graph` containing a minimal
         non-planar subgraph of a non-planar graph.
 
     Raises:
-        ValueError: if the given graph is already a 
-            :py:class:`~planarity.classic.planarity.PGraph`. 
-        RuntimeError: if the graph couldn't be converted to a 
-            :py:class:`~planarity.classic.planarity.PGraph`.
+        ValueError: if the given graph is already a
+            :py:class:`~planarity.express.planarity.PGraph`.
+        RuntimeError: if the graph couldn't be converted to a
+            :py:class:`~planarity.express.planarity.PGraph`.
         RuntimeError: if an error was encountered by C-layer methods such
-            as ``gp_Embed()``. 
+            as ``gp_Embed()``.
         ImportError: On failure to import ``NetworkX``.
     """
     try:
@@ -45,15 +45,15 @@ def kuratowski_subgraph(graph):
 
 
 def networkx_graph(pgraph):
-    """Builds a :external+networkx:py:class:`networkx.Graph` from a :py:class:`~planarity.classic.planarity.PGraph`.
+    """Builds a :external+networkx:py:class:`networkx.Graph` from a :py:class:`~planarity.express.planarity.PGraph`.
 
     Args:
-        pgraph: A :py:class:`~planarity.classic.planarity.PGraph` to convert to
+        pgraph: A :py:class:`~planarity.express.planarity.PGraph` to convert to
             a A :external+networkx:py:class:`networkx.Graph`.
 
     Returns:
         A :external+networkx:py:class:`networkx.Graph` built from a
-        :py:class:`~planarity.classic.planarity.PGraph`.
+        :py:class:`~planarity.express.planarity.PGraph`.
 
     Raises:
         ImportError: On failure to import ``NetworkX``.
@@ -69,15 +69,15 @@ def networkx_graph(pgraph):
 
 
 def pgraph_graph(graph):
-    """Builds a :py:class:`~planarity.classic.planarity.PGraph` from the graph.
+    """Builds a :py:class:`~planarity.express.planarity.PGraph` from the graph.
 
     Args:
         graph: A graph specified in a format that may be converted to a
-            :py:class:`~planarity.classic.planarity.PGraph`, including a
+            :py:class:`~planarity.express.planarity.PGraph`, including a
             :external+networkx:py:class:`networkx.Graph`.
 
     Returns:
-        A :py:class:`~planarity.classic.planarity.PGraph` representing the same
+        A :py:class:`~planarity.express.planarity.PGraph` representing the same
         graph as the input ``graph``.
     """
     return planarity.PGraph(graph)

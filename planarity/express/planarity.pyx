@@ -7,7 +7,7 @@ from libc.stdlib cimport free
 import typing
 import warnings
 
-from planarity.classic cimport cplanarity
+from planarity.express cimport cplanarity
 
 
 cdef class PGraph:
@@ -15,7 +15,7 @@ cdef class PGraph:
 
     Attributes:
         theGraph: The C-layer graph data structure instance wrapped by the
-            :py:class:`~planarity.classic.planarity.PGraph`.
+            :py:class:`~planarity.express.planarity.PGraph`.
         nodemap (dict[typing.Any, int]): the mapping of original labels to the
             internal vertex indexes.
         reverse_nodemap (dict[int, typing.Any]): The mapping of internal vertex
@@ -23,9 +23,9 @@ cdef class PGraph:
         _embedding_workflow_status (int): Indicates the status of the embedding
             workflow; the value is not meaningful until after an embedding
             workflow method such as one of the following has been called:
-            * :py:meth:`~planarity.classic.planarity.PGraph.is_planar`
-            * :py:meth:`~planarity.classic.planarity.PGraph.embed_planar`
-            * :py:meth:`~planarity.classic.planarity.PGraph.embed_drawplanar`
+            * :py:meth:`~planarity.express.planarity.PGraph.is_planar`
+            * :py:meth:`~planarity.express.planarity.PGraph.embed_planar`
+            * :py:meth:`~planarity.express.planarity.PGraph.embed_drawplanar`
 
             Note that these are called by several of the other member methods.
 
@@ -39,7 +39,7 @@ cdef class PGraph:
     cdef int _embedding_workflow_status
 
     def __init__(self, graph):
-        """Initialize :py:class:`~planarity.classic.planarity.PGraph` from an input graph.
+        """Initialize :py:class:`~planarity.express.planarity.PGraph` from an input graph.
 
         Args:
             graph (networkx.Graph | dict[typing.Any, collections.abc.Iterable[typing.Any]] | list[list[typing.Any] | tuple[typing.Any, typing.Any]]):
@@ -48,9 +48,9 @@ cdef class PGraph:
 
         Raises:
             ValueError: if the given graph is already a
-                :py:class:`~planarity.classic.planarity.PGraph`.
+                :py:class:`~planarity.express.planarity.PGraph`.
             RuntimeError: if the graph couldn't be converted to a
-                :py:class:`~planarity.classic.planarity.PGraph`.
+                :py:class:`~planarity.express.planarity.PGraph`.
             RuntimeError: if an error was encountered by C-layer methods such
                 as ``gp_New()``, ``gp_EnsureVertexCapacity()``, or
                 ``gp_DynamicAddEdge()``.
@@ -98,7 +98,7 @@ cdef class PGraph:
 
         n = len(nodes)
         # NOTE: This presumes 1-based arrays; however, this can only be changed
-        # if you add -DUSE_0BASEDARRAYS to the extra_compile_args of the classic
+        # if you add -DUSE_0BASEDARRAYS to the extra_compile_args of the express
         # planarity extension in setup.py.
         self.nodemap = dict(zip(nodes, range(1, n+1)))
         self.reverse_nodemap = dict(zip(range(1, n+1), nodes))
@@ -669,9 +669,9 @@ cdef class PGraph:
 
         Returns:
             A mapping between the integers assigned to the vertices, by
-            :py:class:`~planarity.classic.planarity.PGraph` initialization,
+            :py:class:`~planarity.express.planarity.PGraph` initialization,
             and their original labels provided to
-            :py:class:`~planarity.classic.planarity.PGraph` initialization.
+            :py:class:`~planarity.express.planarity.PGraph` initialization.
         """
         return self.reverse_nodemap
 

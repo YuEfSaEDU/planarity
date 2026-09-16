@@ -1,6 +1,6 @@
-from .classic.planarity import PGraph
-from .classic.planarity_functions import *
-from .classic.planarity_networkx import *
+from .express.planarity import PGraph
+from .express.planarity_functions import *
+from .express.planarity_networkx import *
 
 # Surfaced from planarityc/graphLib/lowLevelUtils/apiutils.h
 from .full.graphLib import (
