@@ -501,7 +501,7 @@ cdef class PGraph:
                 call :external+matplotlib:py:func:`matplotlib.pyplot.savefig`.
             **kwargs: Optional drawing parameters. ``figsize`` and ``dpi``
                 control the figure size and resolution. ``facecolor`` sets
-                the figure background (default ``'#f0f0f0'``).
+                the figure background (default ``'#ffffff'``).
                 ``vertex_facecolor`` and ``vertex_bordercolor`` set vertex
                 rectangle colors; omitted values use Matplotlib's patch
                 defaults. ``vertex_label_facecolor`` and
@@ -557,7 +557,7 @@ cdef class PGraph:
             elif key == 'dpi':
                 fig.set_dpi(value)
 
-        fig.set_facecolor(kwargs.get('facecolor', '#f0f0f0'))
+        fig.set_facecolor(kwargs.get('facecolor', '#ffffff'))
 
         self.embed_drawplanar()
 
