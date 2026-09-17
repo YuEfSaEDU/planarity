@@ -499,11 +499,16 @@ cdef class PGraph:
             outfileName (:obj:`str`): File to which to output a Matplotlib
                 rendering of the planar graph. If not given, then the caller can
                 call :external+matplotlib:py:func:`matplotlib.pyplot.savefig`.
-            **kwargs: Optional figure-level parameters to apply to the
-                current figure after it is cleared. Supported keys are
-                ``figsize`` and ``dpi``. If none are given, Matplotlib's
-                default figure size and DPI are used, matching prior
-                behavior.
+            **kwargs: Optional parameters to apply to the rendering.
+                Supported keys are ``figsize``, ``dpi``, and ``pad_inches``.
+                ``figsize`` and ``dpi`` are figure-level parameters applied
+                to the current figure after it is cleared; if none are
+                given, Matplotlib's default figure size and DPI are used,
+                matching prior behavior. The image is saved with a tight
+                bounding box (``bbox_inches="tight"``), where ``pad_inches``
+                gives the padding, in inches, around the drawing. If not
+                given, ``pad_inches`` defaults to 0.1, while a value of 0.0
+                causes the drawing to extend to the borders of the image.
 
         Raises:
             ValueError: if an unsupported keyword argument is given.
@@ -531,7 +536,8 @@ cdef class PGraph:
         plt.clf()
 
         fig = plt.gcf()
-        valid_fig_kwargs = ('figsize', 'dpi')
+        valid_fig_kwargs = ('figsize', 'dpi', 'pad_inches')
+        pad_inches = 0.1
         for key, value in kwargs.items():
             if key not in valid_fig_kwargs:
                 raise ValueError(
@@ -542,6 +548,8 @@ cdef class PGraph:
                 fig.set_size_inches(value)
             elif key == 'dpi':
                 fig.set_dpi(value)
+            elif key == 'pad_inches':
+                pad_inches = value
 
         self.embed_drawplanar()
 
@@ -587,9 +595,14 @@ cdef class PGraph:
         p = PatchCollection(patches)
         ax = plt.gca()
         ax.add_collection(p)
-        plt.axis('equal')
-        plt.xlim(min(xs)-1, max(xs)+1)
-        plt.ylim(min(ys)-1, max(ys)+1)
+        # Set the axes limits flush with the drawn geometry, with a
+        # fixed-aspect axes that adjusts its box, so that the tight
+        # bounding box used by savefig() hugs the drawing itself. All
+        # whitespace around the image is then controlled by the
+        # pad_inches value passed to savefig() below.
+        ax.set_aspect('equal', adjustable='box')
+        plt.xlim(min(xs), max(xs))
+        plt.ylim(min(ys), max(ys))
         #flipping y axis direction
         plt.gca().invert_yaxis()
         plt.axis('off')
@@ -634,7 +647,12 @@ cdef class PGraph:
                     ).transformed(inv)
 
         if outfileName:
-            plt.savefig(outfileName, dpi=fig.dpi)
+            plt.savefig(
+                outfileName,
+                dpi=fig.dpi,
+                bbox_inches='tight',
+                pad_inches=pad_inches
+            )
 
     def write(
         self, str path='stdout', int writeMode=cplanarity.WRITE_ADJLIST

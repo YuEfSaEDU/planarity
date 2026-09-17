@@ -120,9 +120,13 @@ def draw(graph, labels=True, outfileName=None, **kwargs):
         outfileName (:obj:`str`): File to which to output a Matplotlib
             rendering of the planar graph. If not given, then the caller can
             call :external+matplotlib:py:func:`matplotlib.pyplot.savefig`.
-        **kwargs: Optional figure-level parameters forwarded to
+        **kwargs: Optional parameters forwarded to
             :py:meth:`~planarity.classic.planarity.PGraph.draw`. Supported
-            keys are ``figsize`` and ``dpi``.
+            keys are ``figsize``, ``dpi``, and ``pad_inches``, where the
+            image is saved with a tight bounding box
+            (``bbox_inches="tight"``) padded by ``pad_inches`` inches
+            around the drawing (default 0.1; 0.0 causes the drawing to
+            extend to the borders of the image).
 
     Raises:
         ValueError: if the given graph is already a
