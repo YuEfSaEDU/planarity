@@ -62,7 +62,7 @@ In [11]: print(planarity.ascii(edgelist))
 </pre>
 
 ```python
-In [12]: planarity.draw(edgelist, outfileName='K5-minus-edge.png')
+In [12]: planarity.draw(edgelist, outfileName='K5-minus-edge.png', vertex_bordercolor='black')
 ```
 ![K_5-minus-edge](/examples/classic/output/K5-minus-edge.png
 "Matplotlib render of $K_5$-minus-edge")
