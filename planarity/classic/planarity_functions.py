@@ -120,9 +120,12 @@ def draw(graph, labels=True, outfileName=None, **kwargs):
         outfileName (:obj:`str`): File to which to output a Matplotlib
             rendering of the planar graph. If not given, then the caller can
             call :external+matplotlib:py:func:`matplotlib.pyplot.savefig`.
-        **kwargs: Optional figure-level parameters forwarded to
+        **kwargs: Optional drawing parameters forwarded to
             :py:meth:`~planarity.classic.planarity.PGraph.draw`. Supported
-            keys are ``figsize`` and ``dpi``.
+            keys are ``figsize``, ``dpi``, ``facecolor``, ``transparent``,
+            ``vertex_facecolor``, ``vertex_bordercolor``,
+            ``vertex_label_facecolor``, ``vertex_label_bordercolor`` and
+            ``edge_linecolor``. See the method documentation for defaults.
 
     Raises:
         ValueError: if the given graph is already a

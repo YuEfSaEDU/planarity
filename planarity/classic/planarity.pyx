@@ -499,11 +499,21 @@ cdef class PGraph:
             outfileName (:obj:`str`): File to which to output a Matplotlib
                 rendering of the planar graph. If not given, then the caller can
                 call :external+matplotlib:py:func:`matplotlib.pyplot.savefig`.
-            **kwargs: Optional figure-level parameters to apply to the
-                current figure after it is cleared. Supported keys are
-                ``figsize`` and ``dpi``. If none are given, Matplotlib's
-                default figure size and DPI are used, matching prior
-                behavior.
+            **kwargs: Optional drawing parameters. ``figsize`` and ``dpi``
+                control the figure size and resolution. ``facecolor`` sets
+                the figure background (default ``'#f0f0f0'``).
+                ``vertex_facecolor`` and ``vertex_bordercolor`` set vertex
+                rectangle colors; omitted values use Matplotlib's patch
+                defaults. ``vertex_label_facecolor`` and
+                ``vertex_label_bordercolor`` set label rectangle colors
+                (defaults ``'white'`` and ``'black'``). ``edge_linecolor``
+                sets edge colors (default Matplotlib line color). All color
+                values accept Matplotlib color specifications.
+                ``transparent`` (default ``False``) makes the figure and
+                axes backgrounds transparent when saving to ``outfileName``;
+                it does not remove matching colors from vertices or labels.
+                When saving the figure later yourself, pass ``transparent``
+                to :external+matplotlib:py:func:`matplotlib.pyplot.savefig`.
 
         Raises:
             ValueError: if an unsupported keyword argument is given.
@@ -531,17 +541,23 @@ cdef class PGraph:
         plt.clf()
 
         fig = plt.gcf()
-        valid_fig_kwargs = ('figsize', 'dpi')
+        valid_draw_kwargs = (
+            'figsize', 'dpi', 'facecolor', 'transparent', 'vertex_facecolor',
+            'vertex_bordercolor', 'vertex_label_facecolor',
+            'vertex_label_bordercolor', 'edge_linecolor',
+        )
         for key, value in kwargs.items():
-            if key not in valid_fig_kwargs:
+            if key not in valid_draw_kwargs:
                 raise ValueError(
                     f"planarity: '{key}' is not a supported draw() keyword "
-                    f"argument. Supported options are: {valid_fig_kwargs}."
+                    f"argument. Supported options are: {valid_draw_kwargs}."
                 )
             if key == 'figsize':
                 fig.set_size_inches(value)
             elif key == 'dpi':
                 fig.set_dpi(value)
+
+        fig.set_facecolor(kwargs.get('facecolor', '#f0f0f0'))
 
         self.embed_drawplanar()
 
@@ -582,9 +598,13 @@ cdef class PGraph:
             ye = drawplanar_edge_info['edge_end']
             ys.extend([yb, ye])
             xs.append(x)
-            plt.vlines([x], [yb], [ye])
+            plt.vlines([x], [yb], [ye], colors=kwargs.get('edge_linecolor'))
 
-        p = PatchCollection(patches)
+        p = PatchCollection(
+            patches,
+            facecolors=kwargs.get('vertex_facecolor'),
+            edgecolors=kwargs.get('vertex_bordercolor'),
+        )
         ax = plt.gca()
         ax.add_collection(p)
         plt.axis('equal')
@@ -614,8 +634,8 @@ cdef class PGraph:
                     verticalalignment='center',
                     bbox = dict(
                         boxstyle='round',
-                        ec=(0.0, 0.0, 0.0),
-                        fc=(1.0, 1.0, 1.0),
+                        ec=kwargs.get('vertex_label_bordercolor', 'black'),
+                        fc=kwargs.get('vertex_label_facecolor', 'white'),
                     )
                 )
 
@@ -634,7 +654,11 @@ cdef class PGraph:
                     ).transformed(inv)
 
         if outfileName:
-            plt.savefig(outfileName, dpi=fig.dpi)
+            transparent = kwargs.get('transparent', False)
+            plt.savefig(
+                outfileName, dpi=fig.dpi, transparent=transparent,
+                facecolor='none' if transparent else fig.get_facecolor(),
+            )
 
     def write(
         self, str path='stdout', int writeMode=cplanarity.WRITE_ADJLIST
