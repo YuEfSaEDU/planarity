@@ -598,12 +598,13 @@ cdef class PGraph:
             ye = drawplanar_edge_info['edge_end']
             ys.extend([yb, ye])
             xs.append(x)
-            plt.vlines([x], [yb], [ye], colors=kwargs.get('edge_linecolor'))
+            plt.vlines([x], [yb], [ye], colors=kwargs.get('edge_linecolor'), zorder=1)
 
         p = PatchCollection(
             patches,
             facecolors=kwargs.get('vertex_facecolor'),
             edgecolors=kwargs.get('vertex_bordercolor'),
+            zorder = 2,
         )
         ax = plt.gca()
         ax.add_collection(p)
