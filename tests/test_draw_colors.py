@@ -94,7 +94,7 @@ def test_color_controls_combine_without_labels(draw, tmp_path):
 def test_default_background_resets_after_custom_draw(draw):
     draw(facecolor='red')
     draw()
-    assert plt.gcf().get_facecolor() == pytest.approx(to_rgba('#f0f0f0'))
+    assert plt.gcf().get_facecolor() == pytest.approx(to_rgba('#ffffff'))
     for text in plt.gca().texts:
         assert text.get_bbox_patch().get_facecolor() == to_rgba('white')
         assert text.get_bbox_patch().get_edgecolor() == to_rgba('black')
