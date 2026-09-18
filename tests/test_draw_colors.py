@@ -70,7 +70,12 @@ def test_png_background_and_transparency(draw, tmp_path, transparent):
     draw(outfileName=str(output), facecolor='#abcdef', transparent=transparent,
          figsize=(4, 3), dpi=100)
     with Image.open(output) as image:
-        assert image.size == (400, 300)
+        # The tight bounding box (Issue #100) crops the saved image to the
+        # drawing plus pad_inches, so it is strictly smaller than the
+        # nominal figsize canvas at the given dpi.
+        width, height = image.size
+        assert 0 < width < 400
+        assert 0 < height < 300
         rgba = image.convert('RGBA')
         if transparent:
             assert rgba.getpixel((0, 0))[3] == 0
