@@ -586,8 +586,6 @@ cdef class PGraph:
         patches = []
         node_labels = {}
         vertex_bounds = {}
-        xs = []
-        ys = []
         # Use tuple unpacking for the list of tuples representing nodes
         for node, drawplanar_vertex_info in self.nodes(
             include_drawplanar_vertex_info=True
@@ -602,8 +600,6 @@ cdef class PGraph:
                 (xb, y - 0.25), xe - xb, 0.5,
                 boxstyle="round,pad=0.05",
             )]
-            xs.extend([xb, xe])
-            ys.append(y)
 
         # Use tuple unpacking for the list of tuples representing edges
         for (_, _, drawplanar_edge_info) in self.edges(
@@ -612,8 +608,6 @@ cdef class PGraph:
             x = drawplanar_edge_info['edge_position']
             yb = drawplanar_edge_info['edge_start']
             ye = drawplanar_edge_info['edge_end']
-            ys.extend([yb, ye])
-            xs.append(x)
             plt.vlines(
                 [x], [yb], [ye], colors=kwargs.get('edge_linecolor'), zorder=1,
             )
@@ -626,14 +620,14 @@ cdef class PGraph:
         )
         ax = plt.gca()
         ax.add_collection(p)
-        # Set the axes limits flush with the drawn geometry, with a
-        # fixed-aspect axes that adjusts its box, so that the tight
-        # bounding box used by savefig() hugs the drawing itself. All
-        # whitespace around the image is then controlled by the
-        # pad_inches value passed to savefig() below.
+
+        # Sets the aspect ratio of the axes to 'equal', then recomputes 
+        # the geometric limits from the vertex and edge drawings, and 
+        # autoscales the view limits of the plot using these limits.
         ax.set_aspect('equal', adjustable='box')
-        plt.xlim(min(xs), max(xs))
-        plt.ylim(min(ys), max(ys))
+        ax.relim()
+        ax.autoscale_view()
+
         #flipping y axis direction
         plt.gca().invert_yaxis()
         plt.axis('off')
