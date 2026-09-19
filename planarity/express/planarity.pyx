@@ -503,10 +503,32 @@ cdef class PGraph:
                 rendering of the planar graph. If not given, then the caller can
                 call :external+matplotlib:py:func:`matplotlib.pyplot.savefig`.
             **kwargs: Optional figure-level parameters to apply to the
-                current figure after it is cleared. Supported keys are
-                ``figsize`` and ``dpi``. If none are given, Matplotlib's
-                default figure size and DPI are used, matching prior
-                behavior.
+                current figure after it is cleared. Supported keys are:
+
+                * ``figsize`` and ``dpi`` - Control figure size and
+                    resolution.
+                * ``pad_inches`` - The image is saved with a tight bounding
+                    box (``bbox_inches="tight"``), where ``pad_inches``
+                    gives the padding, in inches, around the drawing. If not
+                    given, ``pad_inches`` defaults to 0.1, while a value of
+                    0.0 causes the drawing to extend to the borders of the
+                    image.
+                * ``facecolor`` - Sets the figure background (default
+                    ``'#ffffff'``).
+                * ``vertex_facecolor`` and ``vertex_bordercolor`` set vertex
+                    rectangle colors; omitted values use Matplotlib's patch
+                    defaults.
+                * ``vertex_label_facecolor`` and ``vertex_label_bordercolor`` -
+                    Set label rectangle colors (defaults ``'white'`` and
+                    ``'black'``).
+                * ``edge_linecolor`` - Set edge colors (default Matplotlib line
+                    color).
+                * ``transparent`` (default ``False``) makes the figure and axes
+                    backgrounds transparent when saving to ``outfileName``; it
+                    does not remove matching colors from vertices or labels.
+
+                If no options are specified, Matplotlib's defaults are used to
+                render the plot.
 
         Raises:
             ValueError: if an unsupported keyword argument is given.
@@ -534,17 +556,27 @@ cdef class PGraph:
         plt.clf()
 
         fig = plt.gcf()
-        valid_fig_kwargs = ('figsize', 'dpi')
+
+        valid_draw_kwargs = (
+            'figsize', 'dpi', 'pad_inches', 'facecolor', 'transparent',
+            'vertex_facecolor', 'vertex_bordercolor', 'vertex_label_facecolor',
+            'vertex_label_bordercolor', 'edge_linecolor',
+        )
+        pad_inches = 0.1
         for key, value in kwargs.items():
-            if key not in valid_fig_kwargs:
+            if key not in valid_draw_kwargs:
                 raise ValueError(
                     f"planarity: '{key}' is not a supported draw() keyword "
-                    f"argument. Supported options are: {valid_fig_kwargs}."
+                    f"argument. Supported options are: {valid_draw_kwargs}."
                 )
             if key == 'figsize':
                 fig.set_size_inches(value)
             elif key == 'dpi':
                 fig.set_dpi(value)
+            elif key == 'pad_inches':
+                pad_inches = value
+
+        fig.set_facecolor(kwargs.get('facecolor', '#ffffff'))
 
         self.embed_drawplanar()
 
@@ -557,8 +589,6 @@ cdef class PGraph:
         patches = []
         node_labels = {}
         vertex_bounds = {}
-        xs = []
-        ys = []
         # Use tuple unpacking for the list of tuples representing nodes
         for node, drawplanar_vertex_info in self.nodes(
             include_drawplanar_vertex_info=True
@@ -573,8 +603,6 @@ cdef class PGraph:
                 (xb, y - 0.25), xe - xb, 0.5,
                 boxstyle="round,pad=0.05",
             )]
-            xs.extend([xb, xe])
-            ys.append(y)
 
         # Use tuple unpacking for the list of tuples representing edges
         for (_, _, drawplanar_edge_info) in self.edges(
@@ -583,16 +611,26 @@ cdef class PGraph:
             x = drawplanar_edge_info['edge_position']
             yb = drawplanar_edge_info['edge_start']
             ye = drawplanar_edge_info['edge_end']
-            ys.extend([yb, ye])
-            xs.append(x)
-            plt.vlines([x], [yb], [ye])
+            plt.vlines(
+                [x], [yb], [ye], colors=kwargs.get('edge_linecolor'), zorder=1,
+            )
 
-        p = PatchCollection(patches)
+        p = PatchCollection(
+            patches,
+            facecolors=kwargs.get('vertex_facecolor'),
+            edgecolors=kwargs.get('vertex_bordercolor'),
+            zorder = 2,
+        )
         ax = plt.gca()
         ax.add_collection(p)
-        plt.axis('equal')
-        plt.xlim(min(xs)-1, max(xs)+1)
-        plt.ylim(min(ys)-1, max(ys)+1)
+
+        # Sets the aspect ratio of the axes to 'equal', then recomputes 
+        # the geometric limits from the vertex and edge drawings, and 
+        # autoscales the view limits of the plot using these limits.
+        ax.set_aspect('equal', adjustable='box')
+        ax.relim()
+        ax.autoscale_view()
+
         #flipping y axis direction
         plt.gca().invert_yaxis()
         plt.axis('off')
@@ -617,8 +655,8 @@ cdef class PGraph:
                     verticalalignment='center',
                     bbox = dict(
                         boxstyle='round',
-                        ec=(0.0, 0.0, 0.0),
-                        fc=(1.0, 1.0, 1.0),
+                        ec=kwargs.get('vertex_label_bordercolor', 'black'),
+                        fc=kwargs.get('vertex_label_facecolor', 'white'),
                     )
                 )
 
@@ -637,7 +675,15 @@ cdef class PGraph:
                     ).transformed(inv)
 
         if outfileName:
-            plt.savefig(outfileName, dpi=fig.dpi)
+            transparent = kwargs.get('transparent', False)
+            plt.savefig(
+                outfileName,
+                dpi=fig.dpi,
+                bbox_inches='tight',
+                pad_inches=pad_inches,
+                transparent=transparent,
+                facecolor='none' if transparent else fig.get_facecolor(),
+            )
 
     def write(
         self, str path='stdout', int writeMode=cplanarity.WRITE_ADJLIST

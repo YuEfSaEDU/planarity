@@ -1,5 +1,6 @@
 import os
 import tempfile
+from unittest import SkipTest
 
 import planarity
 
@@ -150,5 +151,78 @@ class TestPlanarity:
         answer = '>>graph6<<A_\n'
         assert d == answer
         os.unlink(fname)
+
+    @staticmethod
+    def _get_pyplot_agg():
+        try:
+            import matplotlib
+            matplotlib.use('Agg')
+            import matplotlib.pyplot as plt
+        except ImportError:
+            raise SkipTest('matplotlib not available.')
+        return plt
+
+    @staticmethod
+    def _capture_savefig(plt, monkeypatch):
+        captured = {}
+
+        def fake_savefig(*args, **kwargs):
+            captured.update(kwargs)
+
+        monkeypatch.setattr(plt, 'savefig', fake_savefig)
+        return captured
+
+    def test_draw_savefig_tight_bounding_box_default_pad(self, monkeypatch):
+        plt = self._get_pyplot_agg()
+        P = planarity.PGraph(self.p4_edgelist)
+        fname = tempfile.mktemp(suffix='.png')
+        captured = self._capture_savefig(plt, monkeypatch)
+        P.draw(outfileName=fname)
+        assert captured.get('bbox_inches') == 'tight'
+        assert captured.get('pad_inches') == 0.1
+
+    def test_draw_savefig_pad_inches_kwarg(self, monkeypatch):
+        plt = self._get_pyplot_agg()
+        P = planarity.PGraph(self.p4_edgelist)
+        fname = tempfile.mktemp(suffix='.png')
+        captured = self._capture_savefig(plt, monkeypatch)
+        P.draw(outfileName=fname, pad_inches=0.25)
+        assert captured.get('bbox_inches') == 'tight'
+        assert captured.get('pad_inches') == 0.25
+
+    def test_draw_function_pad_inches_kwarg(self, monkeypatch):
+        plt = self._get_pyplot_agg()
+        fname = tempfile.mktemp(suffix='.png')
+        captured = self._capture_savefig(plt, monkeypatch)
+        planarity.draw(self.p4_edgelist, outfileName=fname, pad_inches=0.0)
+        assert captured.get('bbox_inches') == 'tight'
+        assert captured.get('pad_inches') == 0.0
+
+    def test_draw_pad_inches_controls_output_padding(self):
+        plt = self._get_pyplot_agg()
+        P = planarity.PGraph(self.p4_edgelist)
+        zero_fname = tempfile.mktemp(suffix='.png')
+        half_fname = tempfile.mktemp(suffix='.png')
+        try:
+            P.draw(outfileName=zero_fname, pad_inches=0.0)
+            P.draw(outfileName=half_fname, pad_inches=0.5)
+            zero = plt.imread(zero_fname)
+            half = plt.imread(half_fname)
+            # With pad_inches=0.0, the drawing extends to the borders of
+            # the image.
+            nonwhite = (zero[:, :, :3] < 0.999).any(axis=2)
+            rows = nonwhite.any(axis=1).nonzero()[0]
+            cols = nonwhite.any(axis=0).nonzero()[0]
+            h, w = nonwhite.shape
+            margins = (cols.min(), w - 1 - cols.max(),
+                       rows.min(), h - 1 - rows.max())
+            assert max(margins) <= 2
+            # A pad_inches of 0.5 adds 0.5 inches of padding per side at
+            # the default figure dpi of 100.
+            assert abs((half.shape[0] - zero.shape[0]) - 100) <= 2
+            assert abs((half.shape[1] - zero.shape[1]) - 100) <= 2
+        finally:
+            os.unlink(zero_fname)
+            os.unlink(half_fname)
 
 

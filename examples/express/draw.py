@@ -34,13 +34,13 @@ if P1.is_planar():
     print(planar_rendition)
 
     # Output Matplotlib rendering
-    P2.draw(outfileName='K5-minus-edge.png')
+    P2.draw(outfileName='K5-minus-edge.png', vertex_bordercolor='black')
 
     # Verify fig_kwargs (#87): generate 300dpi and 600dpi variants
     P3 = planarity.PGraph(edgelist)
-    P3.draw(outfileName='K5-minus-edge-300dpi.png', dpi=300)
+    P3.draw(outfileName='K5-minus-edge-300dpi.png', dpi=300, vertex_bordercolor='black')
 
     P4 = planarity.PGraph(edgelist)
-    P4.draw(outfileName='K5-minus-edge-600dpi.png', dpi=600)
+    P4.draw(outfileName='K5-minus-edge-600dpi.png', dpi=600, vertex_bordercolor='black')
 else:
     print("The graph cannot be drawn because it is non-planar.")
