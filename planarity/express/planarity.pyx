@@ -623,6 +623,7 @@ cdef class PGraph:
         )
         ax = plt.gca()
         ax.add_collection(p)
+        p.set_clip_on(False)
 
         # Sets the aspect ratio of the axes to 'equal', then recomputes
         # the geometric limits from the vertex and edge drawings, removes
@@ -631,6 +632,7 @@ cdef class PGraph:
         ax.set_aspect('equal', adjustable='box')
         ax.relim()
         ax.margins(0)
+        ### ax.set_axisbelow(True)
         ax.autoscale_view()
 
         #flipping y axis direction
