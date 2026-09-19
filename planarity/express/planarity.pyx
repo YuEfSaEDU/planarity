@@ -540,6 +540,20 @@ cdef class PGraph:
                 the one indicated by ``EMBEDFLAGS_DRAWPLANAR``.
             RuntimeError: if the graph is non-planar.
         """
+        ######################################################
+        # Run the combinatorial planar graph drawing algorithm
+        ######################################################
+        self.embed_drawplanar()
+        if self._embedding_workflow_status != cplanarity.OK:
+            self._embedding_workflow_status = cplanarity.NOTOK
+            raise RuntimeError(
+                "planarity: Unable to draw() graph due to error encountered in "
+                "embedding workflow."
+            )
+        
+        ###############################
+        # Prepare for graphic rendering
+        ###############################
         try:
             import matplotlib.pyplot as plt
             from matplotlib.patches import FancyBboxPatch
@@ -550,19 +564,19 @@ cdef class PGraph:
                 "dependencies from Matplotlib."
             ) from matplotlib_import_error
 
-        # We must clear the figure stack to guarantee a fresh plot, since the
-        # figure stack can be mdoified by others, including invocations of this
-        # method on other PGraphs.
-        plt.clf()
-
-        fig = plt.gcf()
-
+        ##################################################
+        # Get the graphic rendering parameters from kwargs
+        ##################################################
         valid_draw_kwargs = (
             'figsize', 'dpi', 'pad_inches', 'facecolor', 'transparent',
             'vertex_facecolor', 'vertex_bordercolor', 'vertex_label_facecolor',
             'vertex_label_bordercolor', 'edge_linecolor',
         )
+
+        figsize = (6.4, 4.8)
+        dpi = 100
         pad_inches = 0.1
+
         for key, value in kwargs.items():
             if key not in valid_draw_kwargs:
                 raise ValueError(
@@ -570,26 +584,42 @@ cdef class PGraph:
                     f"argument. Supported options are: {valid_draw_kwargs}."
                 )
             if key == 'figsize':
-                fig.set_size_inches(value)
+                figsize = value
             elif key == 'dpi':
-                fig.set_dpi(value)
+                dpi = value
             elif key == 'pad_inches':
                 pad_inches = value
 
+        ###################################
+        # Initialize the figure to be drawn
+        ###################################
+        plt.clf()
+        fig = plt.gcf()
+        fig.set_size_inches(figsize)
+        fig.set_dpi(dpi)
         fig.set_facecolor(kwargs.get('facecolor', '#ffffff'))
 
-        self.embed_drawplanar()
-
-        if self._embedding_workflow_status != cplanarity.OK:
-            self._embedding_workflow_status = cplanarity.NOTOK
-            raise RuntimeError(
-                "planarity: Unable to draw() graph due to error encountered in "
-                "embedding workflow."
+        ##################################
+        # Draw the edges as vertical lines
+        ##################################
+        # Use tuple unpacking for the list of tuples representing edges
+        for (_, _, drawplanar_edge_info) in self.edges(
+            include_drawplanar_edge_info=True
+        ):
+            x = drawplanar_edge_info['edge_position']
+            yb = drawplanar_edge_info['edge_start']
+            ye = drawplanar_edge_info['edge_end']
+            plt.vlines(
+                [x], [yb], [ye], colors=kwargs.get('edge_linecolor'), zorder=1,
             )
+
+        #################################################
+        # Draw the vertices (nodes) as rounded rectangles
+        #################################################
         patches = []
         node_labels = {}
         vertex_bounds = {}
-        # Use tuple unpacking for the list of tuples representing nodes
+        # Use tuple unpacking for the list of tuples representing vertices
         for node, drawplanar_vertex_info in self.nodes(
             include_drawplanar_vertex_info=True
         ):
@@ -604,17 +634,6 @@ cdef class PGraph:
                 boxstyle="round,pad=0.05",
             )]
 
-        # Use tuple unpacking for the list of tuples representing edges
-        for (_, _, drawplanar_edge_info) in self.edges(
-            include_drawplanar_edge_info=True
-        ):
-            x = drawplanar_edge_info['edge_position']
-            yb = drawplanar_edge_info['edge_start']
-            ye = drawplanar_edge_info['edge_end']
-            plt.vlines(
-                [x], [yb], [ye], colors=kwargs.get('edge_linecolor'), zorder=1,
-            )
-
         p = PatchCollection(
             patches,
             facecolors=kwargs.get('vertex_facecolor'),
@@ -625,21 +644,21 @@ cdef class PGraph:
         ax.add_collection(p)
         p.set_clip_on(False)
 
-        # Sets the aspect ratio of the axes to 'equal', then recomputes
-        # the geometric limits from the vertex and edge drawings, removes
-        # any default margins, and then autoscales the view limits of the plot
-        # using these limits.
+        ################################################################
+        # Recalculate geometric limits based on vertices and edges drawn
+        ################################################################
         ax.set_aspect('equal', adjustable='box')
         ax.relim()
         ax.margins(0)
-        ### ax.set_axisbelow(True)
         ax.autoscale_view()
 
-        #flipping y axis direction
+        # Flip the y-axis to start drawing from the top-left corner
         plt.gca().invert_yaxis()
         plt.axis('off')
 
-        # Apply labels to nodes if specified
+        #####################################################################
+        # Draw the vertex labels (node labels), if specified by the parameter
+        #####################################################################
         if labels:
             fig = plt.gcf()
             # Force a draw so the axes' data<->pixel transform is finalized
@@ -678,6 +697,9 @@ cdef class PGraph:
                         renderer=renderer
                     ).transformed(inv)
 
+        ###########################################################
+        # Output the diagram to file, if specified by the parameter
+        ###########################################################
         if outfileName:
             transparent = kwargs.get('transparent', False)
             plt.savefig(
