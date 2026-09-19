@@ -624,11 +624,13 @@ cdef class PGraph:
         ax = plt.gca()
         ax.add_collection(p)
 
-        # Sets the aspect ratio of the axes to 'equal', then recomputes 
-        # the geometric limits from the vertex and edge drawings, and 
-        # autoscales the view limits of the plot using these limits.
+        # Sets the aspect ratio of the axes to 'equal', then recomputes
+        # the geometric limits from the vertex and edge drawings, removes
+        # any default margins, and then autoscales the view limits of the plot
+        # using these limits.
         ax.set_aspect('equal', adjustable='box')
         ax.relim()
+        ax.margins(0)
         ax.autoscale_view()
 
         #flipping y axis direction
