@@ -25,17 +25,18 @@ In [1]: # Example of the complete graph of 5 nodes, K5, which is not planar.
 
 In [2]: import planarity
 
-In [3]: edgelist = [('Amsterdam', 'Beijing'), ('Amsterdam', 'Chicago'), ('Amsterdam', 'Delhi'), ('Amsterdam', 'Esmeraldas'),
-                    ('Beijing', 'Chicago'),('Beijing', 'Delhi'),('Beijing', 'Esmeraldas'),
-                    ('Chicago', 'Delhi'), ('Chicago', 'Esmeraldas'),
-                    ('Delhi', 'Esmeraldas')]
+In [3]: edgelist = [
+            ('Athens', 'Beijing'), ('Athens', 'Chicago'), ('Athens', 'Delhi'), ('Athens', 'Esmeraldas'),
+            ('Beijing', 'Chicago'),('Beijing', 'Delhi'),('Beijing', 'Esmeraldas'),
+            ('Chicago', 'Delhi'), ('Chicago', 'Esmeraldas'),
+            ('Delhi', 'Esmeraldas')]
 
 In [4]: print(planarity.is_planar(edgelist))
 False
 
 In [5]: # Remove an edge to make the graph planar
 
-In [6]: edgelist.remove(('Amsterdam', 'Beijing'))
+In [6]: edgelist.remove(('Athens', 'Beijing'))
 
 In [7]: print(planarity.is_planar(edgelist))
 True
@@ -43,7 +44,7 @@ True
 In [8]: # Show the mapping of node indexes to their original labels
 
 In [9]: print(planarity.mapping(edgelist))
-{1: 'Amsterdam', 2: 'Beijing', 3: 'Chicago', 4: 'Delhi', 5: 'Esmeraldas'}
+{1: 'Athens', 2: 'Beijing', 3: 'Chicago', 4: 'Delhi', 5: 'Esmeraldas'}
 
 In [10]: # Draw the graph as text
 
@@ -67,7 +68,7 @@ In [12]: planarity.draw(edgelist, outfileName='K5-minus-edge.png', vertex_border
 ![K_5-minus-edge](https://raw.githubusercontent.com/graph-algorithms/planarity/master/examples/express/output/K5-minus-edge.png
 "Matplotlib render of $K_5$-minus-edge")
 
-Note that the removed edge `('Amsterdam', 'Beijing')` corresponds to edge `(1, 2)` using vertex indexes.
+Note that the removed edge `('Athens', 'Beijing')` corresponds to edge `(1, 2)` using vertex indexes.
 
 See [here](https://github.com/graph-algorithms/planarity/tree/master/examples)
 for more examples.

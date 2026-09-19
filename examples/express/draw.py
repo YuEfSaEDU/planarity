@@ -4,10 +4,11 @@ import planarity
 # Example of the complete graph of 5 nodes, K5, which is not planar
 
 # Use text strings as labels
-edgelist = [('Amsterdam', 'Beijing'), ('Amsterdam', 'Chicago'), ('Amsterdam', 'Delhi'), ('Amsterdam', 'Esmeraldas'),
-            ('Beijing', 'Chicago'),('Beijing', 'Delhi'),('Beijing', 'Esmeraldas'),
-            ('Chicago', 'Delhi'), ('Chicago', 'Esmeraldas'),
-            ('Delhi', 'Esmeraldas')]
+edgelist = [
+    ('Athens', 'Beijing'), ('Athens', 'Chicago'), ('Athens', 'Delhi'), ('Athens', 'Esmeraldas'),
+    ('Beijing', 'Chicago'),('Beijing', 'Delhi'),('Beijing', 'Esmeraldas'),
+    ('Chicago', 'Delhi'), ('Chicago', 'Esmeraldas'),
+    ('Delhi', 'Esmeraldas')]
 
 # Once can use a try-except to handle non-planar graphs.
 P = planarity.PGraph(edgelist)
@@ -17,7 +18,7 @@ except Exception:
     print("The graph cannot be drawn because it is non-planar.\n")
 
 # Remove an edge so that the graph is now planar
-edgelist.remove(('Amsterdam', 'Beijing'))
+edgelist.remove(('Athens', 'Beijing'))
 
 # How to test graph is planar before attempting to draw: create two PGraph, one
 # on which you will perform is_planar() test, and the second on which you invoke
