@@ -644,18 +644,6 @@ cdef class PGraph:
         ax.add_collection(p)
         p.set_clip_on(False)
 
-        ################################################################
-        # Recalculate geometric limits based on vertices and edges drawn
-        ################################################################
-        ax.set_aspect('equal', adjustable='box')
-        ax.relim()
-        ax.margins(0)
-        ax.autoscale_view()
-
-        # Flip the y-axis to start drawing from the top-left corner
-        plt.gca().invert_yaxis()
-        plt.axis('off')
-
         #####################################################################
         # Draw the vertex labels (node labels), if specified by the parameter
         #####################################################################
@@ -696,6 +684,18 @@ cdef class PGraph:
                     bbox_data = text_obj.get_window_extent(
                         renderer=renderer
                     ).transformed(inv)
+
+        ################################################################
+        # Recalculate geometric limits based on vertices and edges drawn
+        ################################################################
+        ax.set_aspect('equal', adjustable='box')
+        ax.relim()
+        ax.margins(0)
+        ax.autoscale_view()
+
+        # Flip the y-axis to start drawing from the top-left corner
+        plt.gca().invert_yaxis()
+        plt.axis('off')
 
         ###########################################################
         # Output the diagram to file, if specified by the parameter
