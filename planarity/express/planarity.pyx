@@ -7,7 +7,7 @@ from libc.stdlib cimport free
 import typing
 import warnings
 
-from planarity.classic cimport cplanarity
+from planarity.express cimport cplanarity
 
 
 cdef class PGraph:
@@ -15,7 +15,7 @@ cdef class PGraph:
 
     Attributes:
         theGraph: The C-layer graph data structure instance wrapped by the
-            :py:class:`~planarity.classic.planarity.PGraph`.
+            :py:class:`~planarity.express.planarity.PGraph`.
         nodemap (dict[typing.Any, int]): the mapping of original labels to the
             internal vertex indexes.
         reverse_nodemap (dict[int, typing.Any]): The mapping of internal vertex
@@ -23,9 +23,10 @@ cdef class PGraph:
         _embedding_workflow_status (int): Indicates the status of the embedding
             workflow; the value is not meaningful until after an embedding
             workflow method such as one of the following has been called:
-            * :py:meth:`~planarity.classic.planarity.PGraph.is_planar`
-            * :py:meth:`~planarity.classic.planarity.PGraph.embed_planar`
-            * :py:meth:`~planarity.classic.planarity.PGraph.embed_drawplanar`
+
+            - :py:meth:`~planarity.express.planarity.PGraph.is_planar`
+            - :py:meth:`~planarity.express.planarity.PGraph.embed_planar`
+            - :py:meth:`~planarity.express.planarity.PGraph.embed_drawplanar`
 
             Note that these are called by several of the other member methods.
 
@@ -39,7 +40,7 @@ cdef class PGraph:
     cdef int _embedding_workflow_status
 
     def __init__(self, graph):
-        """Initialize :py:class:`~planarity.classic.planarity.PGraph` from an input graph.
+        """Initialize :py:class:`~planarity.express.planarity.PGraph` from an input graph.
 
         Args:
             graph (networkx.Graph | dict[typing.Any, collections.abc.Iterable[typing.Any]] | list[list[typing.Any] | tuple[typing.Any, typing.Any]]):
@@ -48,9 +49,9 @@ cdef class PGraph:
 
         Raises:
             ValueError: if the given graph is already a
-                :py:class:`~planarity.classic.planarity.PGraph`.
+                :py:class:`~planarity.express.planarity.PGraph`.
             RuntimeError: if the graph couldn't be converted to a
-                :py:class:`~planarity.classic.planarity.PGraph`.
+                :py:class:`~planarity.express.planarity.PGraph`.
             RuntimeError: if an error was encountered by C-layer methods such
                 as ``gp_New()``, ``gp_EnsureVertexCapacity()``, or
                 ``gp_DynamicAddEdge()``.
@@ -98,7 +99,7 @@ cdef class PGraph:
 
         n = len(nodes)
         # NOTE: This presumes 1-based arrays; however, this can only be changed
-        # if you add -DUSE_0BASEDARRAYS to the extra_compile_args of the classic
+        # if you add -DUSE_0BASEDARRAYS to the extra_compile_args of the express
         # planarity extension in setup.py.
         self.nodemap = dict(zip(nodes, range(1, n+1)))
         self.reverse_nodemap = dict(zip(range(1, n+1), nodes))
@@ -420,10 +421,11 @@ cdef class PGraph:
                             )
                         )
 
-                        # NOTE: The DrawPlanar context data gives geometric positioning;
-                        # a value of -1 indicates an error state, and therefore the
-                        # drawplanar_edge_info should not be included (i.e., the
-                        # final tuple member will be an empty dict)
+                        # NOTE: The DrawPlanar context data gives geometric
+                        # positioning; a value of -1 indicates an error state,
+                        # and therefore the drawplanar_edge_info should not be
+                        # included (i.e., the final tuple member will be an
+                        # empty dict)
                         if (
                             edge_position > -1 and
                             edge_start > -1 and
@@ -490,12 +492,13 @@ cdef class PGraph:
         Matplotlib and then saved to ``outfileName``, if given.
 
         Args:
-            labels (bool): If ``True``, vertex labels are rendered in the drawing.
-                Otherwise, vertices are rendered unlabelled in the drawing. If a
-                label's rendered width would exceed its vertex's own bounding
-                rectangle, the label is truncated with a trailing ``...`` so it
-                stays within that rectangle (see Issue #91). The vertex's
-                geometry itself is never resized to accommodate a label.
+            labels (bool): If ``True``, vertex labels are rendered in the
+                drawing. Otherwise, vertices are rendered unlabelled in the
+                drawing. If a label's rendered width would exceed its vertex's
+                own bounding rectangle, the label is truncated with a trailing
+                ``...`` so it stays within that rectangle (see Issue #91). The
+                vertex's geometry itself is never resized to accommodate a
+                label.
             outfileName (:obj:`str`): File to which to output a Matplotlib
                 rendering of the planar graph. If not given, then the caller can
                 call :external+matplotlib:py:func:`matplotlib.pyplot.savefig`.
@@ -621,11 +624,13 @@ cdef class PGraph:
         ax = plt.gca()
         ax.add_collection(p)
 
-        # Sets the aspect ratio of the axes to 'equal', then recomputes 
-        # the geometric limits from the vertex and edge drawings, and 
-        # autoscales the view limits of the plot using these limits.
+        # Sets the aspect ratio of the axes to 'equal', then recomputes
+        # the geometric limits from the vertex and edge drawings, removes
+        # any default margins, and then autoscales the view limits of the plot
+        # using these limits.
         ax.set_aspect('equal', adjustable='box')
         ax.relim()
+        ax.margins(0)
         ax.autoscale_view()
 
         #flipping y axis direction
@@ -715,9 +720,8 @@ cdef class PGraph:
 
         Returns:
             A mapping between the integers assigned to the vertices, by
-            :py:class:`~planarity.classic.planarity.PGraph` initialization,
+            :py:class:`~planarity.express.planarity.PGraph` initialization,
             and their original labels provided to
-            :py:class:`~planarity.classic.planarity.PGraph` initialization.
+            :py:class:`~planarity.express.planarity.PGraph` initialization.
         """
         return self.reverse_nodemap
-

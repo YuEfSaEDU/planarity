@@ -4,10 +4,10 @@ from setuptools import setup, Extension
 # NOTE: As soon as pyproject.toml supports glob notation, we should be able to
 # remove setup.py and allow setuptools to leverage that configuration. See:
 # https://github.com/pypa/setuptools/discussions/4154
-classic_sourcefiles = [
-    "planarity/classic/planarity.pyx"
+express_sourcefiles = [
+    "planarity/express/planarity.pyx"
 ]
-classic_sourcefiles.extend(glob("planarity/c/graphLib/**/*.c", recursive=True))
+express_sourcefiles.extend(glob("planarity/c/graphLib/**/*.c", recursive=True))
 
 graphLib_sourcefiles = [
     "planarity/full/graphLib.pyx"
@@ -18,8 +18,8 @@ graphLib_sourcefiles.extend(
 
 extensions = [
     Extension(
-        name="planarity.classic.planarity",
-        sources=classic_sourcefiles,
+        name="planarity.express.planarity",
+        sources=express_sourcefiles,
         include_dirs=['planarity/c/graphLib'],
         # extra_compile_args=["-DDEBUG"], # Uncomment if you want to see debugNOTOK() statements
     ),

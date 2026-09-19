@@ -1,4 +1,4 @@
-# Based on documentation from 
+# Based on documentation from
 # https://packaging.python.org/en/latest/guides/writing-pyproject-toml/
 # and https://setuptools.pypa.io/en/latest/userguide/pyproject_config.html
 
@@ -18,7 +18,7 @@ authors = [
 # NOTE: Only one of authors and maintainers is required, per
 # https://packaging.python.org/en/latest/specifications/pyproject-toml
 # However, also having maintainers allows a different first maintainer
-# to appear, since only the first entry shows on the package page 
+# to appear, since only the first entry shows on the package page
 
 maintainers = [
     {name = "Wanda B. K. Boyer", email = "wbkboyer@gmail.com"},
@@ -72,11 +72,11 @@ dynamic = ["version"]
 include-package-data = false
 packages = [
     "planarity",
-    "planarity.classic",
+    "planarity.express",
     "planarity.full",
 ]
 
-# NOTE: This enables dynamic metadata, e.g. versioning, to be computed during 
+# NOTE: This enables dynamic metadata, e.g. versioning, to be computed during
 # the build process; see:
 # https://setuptools.pypa.io/en/latest/userguide/pyproject_config.html#dynamic-metadata
 # NOTE: In the future, we could automatically generate the version number by

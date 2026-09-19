@@ -1,6 +1,6 @@
-from .classic.planarity import PGraph
-from .classic.planarity_functions import *
-from .classic.planarity_networkx import *
+from .express.planarity import PGraph
+from .express.planarity_functions import *
+from .express.planarity_networkx import *
 
 # Surfaced from planarityc/graphLib/lowLevelUtils/apiutils.h
 from .full.graphLib import (
@@ -108,4 +108,4 @@ from .full.g6IterationUtils import G6ReadIterator, G6WriteIterator
 
 # NOTE: In the future, we could automatically generate the version number by
 # configuring setuptools-scm, but presently this seems simpler.
-__version__ = "1.0.0"
+__version__ = "1.0.1"
