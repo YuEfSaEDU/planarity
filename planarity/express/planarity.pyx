@@ -594,9 +594,9 @@ cdef class PGraph:
         # Initialize the figure to be drawn
         ###################################
         plt.clf()
-        fig = plt.gcf()
-        fig.set_size_inches(figsize)
-        fig.set_dpi(dpi)
+
+        fig = plt.figure(figsize=figsize, dpi=dpi, layout='constrained')
+        fig.get_layout_engine().set(w_pad=pad_inches, h_pad=pad_inches, hspace=0, wspace=0)
         fig.set_facecolor(kwargs.get('facecolor', '#ffffff'))
 
         ##################################
@@ -688,7 +688,7 @@ cdef class PGraph:
         ################################################################
         # Recalculate geometric limits based on vertices and edges drawn
         ################################################################
-        ax.set_aspect('equal', adjustable='box')
+        ax.set_aspect('auto', adjustable='box')
         ax.relim()
         ax.margins(0)
         ax.autoscale_view()
@@ -705,8 +705,6 @@ cdef class PGraph:
             plt.savefig(
                 outfileName,
                 dpi=fig.dpi,
-                bbox_inches='tight',
-                pad_inches=pad_inches,
                 transparent=transparent,
                 facecolor='none' if transparent else fig.get_facecolor(),
             )
