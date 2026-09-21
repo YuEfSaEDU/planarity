@@ -5,10 +5,10 @@ import planarity
 
 # Use text strings as labels
 edgelist = [
-    ('Athens', 'Beijing'), ('Athens', 'Chicago'), ('Athens', 'Delhi'), ('Athens', 'Esmeraldas'),
-    ('Beijing', 'Chicago'),('Beijing', 'Delhi'),('Beijing', 'Esmeraldas'),
-    ('Chicago', 'Delhi'), ('Chicago', 'Esmeraldas'),
-    ('Delhi', 'Esmeraldas')]
+    ('Athens','Beijing'), ('Athens','Chicago'), ('Athens','Delhi'), ('Athens','Esmeraldas'),
+    ('Beijing','Chicago'),('Beijing','Delhi'),('Beijing','Esmeraldas'),
+    ('Chicago','Delhi'), ('Chicago','Esmeraldas'),
+    ('Delhi','Esmeraldas')]
 
 # Once can use a try-except to handle non-planar graphs.
 P = planarity.PGraph(edgelist)

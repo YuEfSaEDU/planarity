@@ -26,10 +26,10 @@ In [1]: # Example of the complete graph of 5 nodes, K5, which is not planar.
 In [2]: import planarity
 
 In [3]: edgelist = [
-            ('Athens', 'Beijing'), ('Athens', 'Chicago'), ('Athens', 'Delhi'), ('Athens', 'Esmeraldas'),
-            ('Beijing', 'Chicago'),('Beijing', 'Delhi'),('Beijing', 'Esmeraldas'),
-            ('Chicago', 'Delhi'), ('Chicago', 'Esmeraldas'),
-            ('Delhi', 'Esmeraldas')]
+            ('Athens','Beijing'), ('Athens','Chicago'), ('Athens','Delhi'), ('Athens','Esmeraldas'),
+            ('Beijing','Chicago'),('Beijing','Delhi'),('Beijing','Esmeraldas'),
+            ('Chicago','Delhi'), ('Chicago','Esmeraldas'),
+            ('Delhi','Esmeraldas')]
 
 In [4]: print(planarity.is_planar(edgelist))
 False
@@ -63,7 +63,8 @@ In [11]: print(planarity.ascii(edgelist))
 </pre>
 
 ```python
-In [12]: planarity.draw(edgelist, outfileName='K5-minus-edge.png', vertex_bordercolor='black')
+In [12]: planarity.draw(edgelist, outfileName='K5-minus-edge.png',
+                        vertex_bordercolor='black', figsize=(4,3), dpi=100)
 ```
 ![K_5-minus-edge](https://raw.githubusercontent.com/graph-algorithms/planarity/master/examples/express/output/K5-minus-edge.png?updated=20260921
 "Matplotlib render of $K_5$-minus-edge")
