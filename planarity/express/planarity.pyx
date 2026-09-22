@@ -564,6 +564,13 @@ cdef class PGraph:
                 "dependencies from Matplotlib."
             ) from matplotlib_import_error
 
+        try:
+            import sys
+        except ImportError as sys_import_error:
+            raise ImportError(
+                "planarity: draw() method failed, unable to import sys."
+            ) from sys_import_error
+
         ##################################################
         # Get the graphic rendering parameters from kwargs
         ##################################################
@@ -596,7 +603,11 @@ cdef class PGraph:
         plt.clf()
 
         fig = plt.figure(figsize=figsize, dpi=dpi, layout='constrained')
-        fig.get_layout_engine().set(w_pad=pad_inches, h_pad=pad_inches, hspace=0, wspace=0)
+
+        w_pad = float(pad_inches) if sys.version_info < (3, 11) else pad_inches
+        h_pad = float(pad_inches) if sys.version_info < (3, 11) else pad_inches
+        fig.get_layout_engine().set(w_pad=w_pad, h_pad=h_pad, hspace=0, wspace=0)
+
         fig.set_facecolor(kwargs.get('facecolor', '#ffffff'))
 
         ##################################
